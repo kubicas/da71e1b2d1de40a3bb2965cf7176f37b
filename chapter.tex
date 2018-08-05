@@ -1,0 +1,166 @@
+%------------------------------------------------------------------------------
+\chapter*{List of abbreviations}
+%------------------------------------------------------------------------------
+\begin{description}
+\item [{API:}] \underline{A}pplication \underline{p}rogramming \underline{i}nterface
+\item [{RSA:}] \underline{R}ivest-\underline{S}hamir-\underline{A}dleman: \index{RSA}
+               a public-key cryptosystem which is widely used for secure data 
+               transmission
+\item [{SSH:}] \underline{S}ecure \underline{sh}ell: \index{SSH}
+               a cryptographic network protocol for operating network services 
+               securely over an unsecured network.
+\end{description}
+% ---------------------------------------------------------------------------- %
+
+%------------------------------------------------------------------------------
+\chapter{Building libGit2 and libSSH2\label{chap:building_git2_ssh2}}
+%------------------------------------------------------------------------------
+\section{libgit2}
+%------------------------------------------------------------------------------
+
+This section includes a description on how the libgit2 library was build and 
+uploaded into the project. Under normal circumstances you can simply use this
+library, and it is not needed to follow the instructions below. Only in cases
+you need a bug fix, a specific new feature or need the library for an additional
+operating system, then you may need to go through this process. Please note, 
+that things may have changed for a new library.
+
+\begin{itemize}
+\item Install CMake (see \S\ref{sec:install_cmake})
+\item Create a github account (see \S\ref{sec:Create_a_github_account})
+\item First we need libssh2, found it on website: \url{https://github.com/libssh2}
+\item Cloned libssh2 from github: \url{https://github.com/libssh2/libssh2}
+      using command:\\
+      !git clone git@github.com:libssh2/libssh2.git!\\
+      (For Windows used !git-bash.bat! which is a mingw64 terminal, and navigated to the !procts! directory)
+\item Extend your path with CMake:\\
+      !export PATH=$PATH:/c/Program\ Files/CMake/bin!
+\item !cd libssh2!
+\item !mkdir build32!
+\item !cd build32!
+\item For windows 32 build:\\
+      !cmake -G "Visual Studio 15 2017" ..!
+\item For Windows 32 Debug:\\
+      !cmake --build . --config Debug!\\
+      For Windows 32 Release:\\
+      !cmake --build . --config Release!
+\item You'll find !libssh2.lib! in the directory !libssh2/Build32/src/Debug! and 
+      !libssh2/Build32/src/Release!
+\item !cd ..!
+\item !mkdir build64!
+\item !cd build64!
+\item For windows 64 build:\\
+      !cmake -G "Visual Studio 15 2017 Win64" ..!
+\item For Windows 64 Debug:\\
+      !cmake --build . --config Debug!\\
+      For Windows 64 Release:\\
+      !cmake --build . --config Release!
+\item You'll find !libssh2.lib! in the directory !libssh2/Build64/src/Debug! and 
+      !libssh2/Build64/src/Release!
+\item You'll find include files in the !libssh2/include! directory
+\item !cd ../..!
+\item Found libgit2 on the website: \url{https://libgit2.github.com/}
+\item Cloned libgit2 from github: \url{https://github.com/libgit2/libgit2}
+      using command:\\
+      !git clone git@github.com:libgit2/libgit2.git!\\
+      (For Windows used !git-bash.bat! which is a mingw64 terminal, and navigated to the !procts! directory)
+\item !export LIBSSH2_INCLUDE_DIRS=P:/ath/to/procts/libssh2/include!\\
+      (Please note the windows notation !P:!. Replace !P:/ath/to! by your path to !procts!)
+\item !cd libgit2!
+\item !mkdir build32!
+\item !cd build32!
+\item For windows 32 build:\\
+      !cmake -G "Visual Studio 15 2017" -DBUILD_CLAR=OFF -DBUILD_SHARED_LIBS=OFF -DTHREADSAFE=ON ..!
+\item For Windows 32 Debug:\\
+      !cmake --build . --config Debug!\\
+      For Windows 32 Release:\\
+      !cmake --build . --config Release!
+\item You'll find !git2.lib! in the directory !libgit2/build32/Debug! and 
+      !libgit2/build32/Release!
+\item For debug, also copy !git2internal.pdb!, !http-parser.pdb!, !regex.pdb! and !zlib.pdb! from
+      !...\libgit2\build32\...\Debug! to !.../procts/share000/ext/lib/git2/winx86d!
+\item !cd ..!
+\item !mkdir build64!
+\item !cd build64!
+\item For windows 64 build:\\
+      !cmake -G "Visual Studio 15 2017 Win64" -DBUILD_CLAR=OFF -DBUILD_SHARED_LIBS=OFF -DTHREADSAFE=ON ..!
+\item For Windows 64 Debug:\\
+      !cmake --build . --config Debug!\\
+      For Windows 64 Release:\\
+      !cmake --build . --config Release!
+\item You'll find !git2.lib! in the directory !libgit2/build64/Debug! and 
+      !libgit2/build64/Release!
+\item For debug, also copy !git2internal.pdb!, !http-parser.pdb!, !regex.pdb! and !zlib.pdb! from
+      !...\libgit2\build64\...\Debug! to !.../procts/share000/ext/lib/git2/winx64d!
+\item You'll find !git2.h! in the !libgit2/include! directory
+\end{itemize}
+In windows the !git2.lib! depends on !crypt32.lib! (also for 64 bit), 
+!rpcrt4.lib! and !winhttp.lib!.
+Add these libraries to `Additional dependencies' for `Linker' in the project
+where you wish to use !git2.lib!.
+
+%------------------------------------------------------------------------------
+\section{Create a github account}\label{sec:Create_a_github_account}
+%------------------------------------------------------------------------------
+
+\begin{itemize}
+\item T.B.C.
+\item Navigate to `Settings' \url{https://github.com/settings}
+\item Navigate to `SSH and GPG keys' \url{https://github.com/settings/keys}
+\item Press `New SSH key'
+\item Paste the key as created in the \S\ref{sec:Create_an_RSA_key}
+\end{itemize}
+
+%------------------------------------------------------------------------------
+\section{Create an RSA key}\label{sec:Create_an_RSA_key}
+%------------------------------------------------------------------------------
+
+An RSA \index{RSA} key is needed for SSH \index{SSH} pubkey authentications. See 
+\url{https://en.wikipedia.org/wiki/Secure_Shell} and
+\url{https://en.wikipedia.org/wiki/RSA_(cryptosystem)} for background information
+about RSA and SSH.
+
+\begin{itemize}
+\item Open a terminal and run: !cd ~/.ssh && ssh-keygen!
+\item Press enter to use the default name !id_rsa!
+\item Press enter twice for no or empty passphrase
+\item Copy the key to the clipboard with the following command
+\begin{description}
+    \item[OS X:] !cat id_rsa.pub | pbcopy!
+    \item[Linux:] !cat id_rsa.pub | xclip!
+    \item[Windows Cygwin/Git Bash:] !cat id_rsa.pub | clip!
+\end{description}
+\end{itemize}
+
+%------------------------------------------------------------------------------
+\section{Install CMake}\label{sec:install_cmake}
+%------------------------------------------------------------------------------
+
+\begin{itemize}
+\item Found CMake on the website: \url{https://cmake.org/download/}
+\item Used release 3.10.0
+\begin{description}
+    \item[OS X]
+    \item[Linux]
+    \item[Windows Cygwin/Git Bash]
+    \begin{itemize}
+        \item Downloaded !cmake-3.10.0-win64-x64.msi!
+        \item Execute !cmake-3.10.0-win64-x64.msi!
+        \item `Next', `I accept ...', `Next'
+        \item `Do not add CMake to the system PATH for the current user', `Next'
+        \item `Next', `Install', `Finish'
+    \end{itemize}
+\end{description}
+\end{itemize}
+
+%------------------------------------------------------------------------------
+\section{Building with Visual Studio 15.4}
+%------------------------------------------------------------------------------
+
+In the transition from 15.3 to 15.4, Microsoft has moved libraries and header files.
+One of the missing libraries is !Gdi32.Lib!.
+
+This can be solved by adding the following environment variables:\\
+!_LINK_=/LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.16299.0\um\x64"!\\
+!_CL_=/I"C:\Program Files (x86)\Windows Kits\10\Include\10.0.16299.0\um"!\\
+Note that the location may differ on you computer.
